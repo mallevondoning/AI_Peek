@@ -10,7 +10,7 @@ public class EnemyController : MonoBehaviour
     public float TickTimer { get; private set; }
     public float MoveSpeed { get; private set; }
     public float RotSpeed { get; private set; }
-    public bool HasMoved { get; private set; }
+    public bool HasMoved { get; set; }
 
     public List<GameObject> RaycastListNorth { get; private set; }
     public List<GameObject> RaycastListEast { get; private set; }
@@ -18,6 +18,8 @@ public class EnemyController : MonoBehaviour
     public List<GameObject> RaycastListWest { get; private set; }
 
     public PointAccses CurrentPoint { get; set; }
+    public PlayerController CanSeePlayer { get; private set; }
+    public MeshCollider LookArea { get; private set; }
 
     private ISpyState _enemyState;
 
@@ -51,6 +53,9 @@ public class EnemyController : MonoBehaviour
             case TestStates.moveToPoint:
                 _enemyState = new MoveToPoint();
                 break;
+            case TestStates.reactOnPlayer:
+                _enemyState = new ReactToPlayer();
+                break;
             default:
                 _enemyState = null;
                 break;
@@ -69,6 +74,14 @@ public class EnemyController : MonoBehaviour
 
         RaycastListWest = new List<GameObject>();
         RaycastDirectionList.Add(RaycastListWest);
+
+        LookArea = GetComponentInChildren<MeshCollider>();
+
+        if (_enemyState != null)
+        {
+            UpdateRaycast();
+            _enemyState.Setup(this);
+        }
 
         CurrentPoint = null;
 
@@ -106,10 +119,6 @@ public class EnemyController : MonoBehaviour
     public void UpdateRaycast()
     {
         List<RaycastHit[]> raycastHitArrayList = new List<RaycastHit[]>();
-
-        RaycastHit[][] tempRay = new RaycastHit[4][];
-
-        //List<GameObject>[] tempRayDir= new List<GameObject>();
         
         //mask for the raycast
         var mask = LayerMask.GetMask("Wall", "Point");
@@ -193,6 +202,22 @@ public class EnemyController : MonoBehaviour
             }
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        PlayerController playerCheck = other.GetComponent<PlayerController>();
+
+        if (playerCheck != null)
+            CanSeePlayer = playerCheck;
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        PlayerController playerCheck = other.GetComponent<PlayerController>();
+
+        if (playerCheck != null)
+            CanSeePlayer = null;
+    }
 }
 
 enum TestStates
@@ -204,4 +229,5 @@ enum TestStates
     east = 3,
     west = 4,
     moveToPoint = 5,
+    reactOnPlayer = 6,
 }

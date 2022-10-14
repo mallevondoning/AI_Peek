@@ -10,11 +10,13 @@ public class Locomotion
     private float _rotSpeed;
     private float _speed;
     private Transform _transform;
+    private Transform _artTransform;
     private Rigidbody _rigidbody;
 
-    public void Setup(Transform transform, float rotSpeed, float speed, Rigidbody rigidbody)
+    public void Setup(Transform transform,Transform artTransform, float rotSpeed, float speed, Rigidbody rigidbody)
     {
         _transform = transform;
+        _artTransform = artTransform;
         _rotSpeed = rotSpeed;
         _speed = speed;
         _rigidbody = rigidbody;
@@ -23,7 +25,7 @@ public class Locomotion
     public void Move(Vector3 normalizedTargetDir)
     {
         //get a normalzied angle between the current forward dirction and the input direction
-        float normalziedAngle = Vector3.Angle(_transform.forward, normalizedTargetDir) / 180f;
+        float normalziedAngle = Vector3.Angle(_artTransform.forward, normalizedTargetDir) / 180f;
 
         //check that we have any input from the player before we rotate
         if (normalizedTargetDir.magnitude > 0f)
@@ -31,7 +33,7 @@ public class Locomotion
             //rotate the player
             Quaternion targetRotation = Quaternion.LookRotation(normalizedTargetDir, Vector3.up);
             float rotSpeed = Mathf.Lerp(_rotSpeed * 0.5f, 720f, normalziedAngle);
-            _transform.rotation = Quaternion.RotateTowards(_transform.rotation, targetRotation, rotSpeed * Time.fixedDeltaTime);
+            _artTransform.rotation = Quaternion.RotateTowards(_artTransform.rotation, targetRotation, rotSpeed * Time.fixedDeltaTime);
         }
 
         float finalSpeed = Mathf.Lerp(_speed, _speed * 0.25f, normalziedAngle);

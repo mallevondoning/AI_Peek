@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
+    private Transform _artTransform;
+    [SerializeField]
     private Rigidbody _rigidbody;
     [SerializeField]
     private float _speed = 500f;
@@ -15,7 +17,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        _locomotion.Setup(transform, _rotSpeed, _speed, _rigidbody);
+        _locomotion.Setup(transform, _artTransform, _rotSpeed, _speed, _rigidbody);
     }
 
     private void FixedUpdate()
