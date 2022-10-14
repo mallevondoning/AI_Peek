@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TurnNorth : ISpyState
 {
-    public void Setup() { }
+    public void Setup(EnemyController e) { }
 
     public void Tick(EnemyController e)
     {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface ISpyState
 {
-    void Setup();
+    void Setup(EnemyController e);
     void Tick(EnemyController e);
     ISpyState Transition(EnemyController e) { return null; }
     void Exit();
