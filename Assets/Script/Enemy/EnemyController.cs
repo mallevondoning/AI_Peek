@@ -11,6 +11,7 @@ public class EnemyController : MonoBehaviour
     public float MoveSpeed { get; private set; }
     public float RotSpeed { get; private set; }
     public bool HasMoved { get; set; }
+    public bool WasMoving { get; set; }
 
     public List<GameObject> RaycastListNorth { get; private set; }
     public List<GameObject> RaycastListEast { get; private set; }
@@ -20,6 +21,13 @@ public class EnemyController : MonoBehaviour
     public PointAccses CurrentPoint { get; set; }
     public PlayerController CanSeePlayer { get; private set; }
     public MeshCollider LookArea { get; private set; }
+
+    [SerializeField]
+    private GameObject _reactState;
+    [SerializeField]
+    private GameObject _chaseState;
+    [SerializeField]
+    private GameObject _lookState;
 
     private ISpyState _enemyState;
 
@@ -77,6 +85,10 @@ public class EnemyController : MonoBehaviour
 
         LookArea = GetComponentInChildren<MeshCollider>();
 
+        _reactState.SetActive(false);
+        _chaseState.SetActive(false);
+        _lookState.SetActive(false);
+
         if (_enemyState != null)
         {
             UpdateRaycast();
@@ -86,6 +98,7 @@ public class EnemyController : MonoBehaviour
         CurrentPoint = null;
 
         HasMoved = true;
+        WasMoving = false;
 
         MoveSpeed = 10f;
         RotSpeed = 180f;
@@ -103,7 +116,6 @@ public class EnemyController : MonoBehaviour
             _enemyState.Setup(this);
         }
     }
-
     IEnumerator TickLoop()
     {
         Tick();
@@ -203,6 +215,19 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    public void SetReactActive(bool isOn)
+    {
+        _reactState.SetActive(isOn);
+    }
+    public void SetChaseActive(bool isOn)
+    {
+        _chaseState.SetActive(isOn);
+    }
+    public void SetLookActive(bool isOn)
+    {
+        _lookState.SetActive(isOn);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         PlayerController playerCheck = other.GetComponent<PlayerController>();
@@ -210,7 +235,6 @@ public class EnemyController : MonoBehaviour
         if (playerCheck != null)
             CanSeePlayer = playerCheck;
     }
-
     private void OnTriggerExit(Collider other)
     {
         PlayerController playerCheck = other.GetComponent<PlayerController>();

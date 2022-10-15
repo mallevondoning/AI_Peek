@@ -124,6 +124,13 @@ public class MoveToPoint : ISpyState
             e.StuckCounter++;
             return new Wait();
         }
+        else if (e.CanSeePlayer != null)
+        {
+            //add code it know it should back to this state
+
+            e.SetReactActive(true);
+            return new ReactToPlayer();
+        }
         else if (e.transform.position.x == pointList[goToPoint].transform.position.x && e.transform.position.z == pointList[goToPoint].transform.position.z)
         {
             e.StuckCounter = 0;

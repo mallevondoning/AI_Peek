@@ -31,6 +31,7 @@ public class Wait : ISpyState
     {
         if (e.CanSeePlayer != null)
         {
+            e.SetReactActive(true);
             return new ReactToPlayer();
         }
         else if (timeWaited >= timeToWait)

@@ -8,7 +8,7 @@ public class ReactToPlayer : ISpyState
 {
     Image meter = null;
 
-    float maxValue = 5f;
+    float maxValue = 0f;
     float currentValue = 0f;
     float valueMultiplier = 1f;
     float normValue = 0f;
@@ -28,9 +28,9 @@ public class ReactToPlayer : ISpyState
         }
 
         if (e.CanSeePlayer != null)
-            currentValue += Time.deltaTime * valueMultiplier;
+            currentValue += e.TickTimer * valueMultiplier;
         else
-            currentValue -= Time.deltaTime;
+            currentValue -= e.TickTimer;
 
         currentValue = Mathf.Clamp(currentValue, 0f, maxValue);
         normValue = currentValue / maxValue;
@@ -42,15 +42,28 @@ public class ReactToPlayer : ISpyState
     {
         if (normValue >= 1f)
         {
+            e.SetChaseActive(true);
+            e.SetReactActive(false);
 
+            //return new ChasePlayer();
         }
         else if (normValue >= 0.5f && e.CanSeePlayer == null)
         {
+            e.SetLookActive(true);
+            e.SetReactActive(false);
 
+            Debug.Log("Future stretch goal");
         }
         else if (normValue <= 0f && e.CanSeePlayer == null)
         {
+            e.SetReactActive(false);
+            e.SetChaseActive(false);
+            e.SetLookActive(false);
 
+            if (e.WasMoving)
+                return new MoveToPoint();
+            else
+                return new Wait();
         }
         return null;
     }

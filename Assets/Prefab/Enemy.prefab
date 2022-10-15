@@ -388,6 +388,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af3cff8099407be42b4a8480b0b872cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _reactState: {fileID: 4433460650656100096}
+  _chaseState: {fileID: 4360009913264780361}
+  _lookState: {fileID: 7860694504989875707}
   db_testStates: 0
 --- !u!1 &2106888994764534432
 GameObject:
