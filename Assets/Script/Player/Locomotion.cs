@@ -9,13 +9,11 @@ public class Locomotion
 
     private float _rotSpeed;
     private float _speed;
-    private Transform _transform;
     private Transform _artTransform;
     private Rigidbody _rigidbody;
 
-    public void Setup(Transform transform,Transform artTransform, float rotSpeed, float speed, Rigidbody rigidbody)
+    public void Setup(Transform artTransform, float rotSpeed, float speed, Rigidbody rigidbody)
     {
-        _transform = transform;
         _artTransform = artTransform;
         _rotSpeed = rotSpeed;
         _speed = speed;

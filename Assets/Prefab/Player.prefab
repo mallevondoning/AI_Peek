@@ -49,7 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _artTransform: {fileID: 8697393836404017599}
   _rigidbody: {fileID: 8697393836343643138}
-  _speed: 250
+  _speed: 400
   _rotSpeed: 270
 --- !u!54 &8697393836343643138
 Rigidbody:
@@ -74,7 +74,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8697393836343643151}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 9f48cb0db822d4549a723ad69f230c97, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5

@@ -16,7 +16,7 @@ public class ReactToPlayer : ISpyState
     public void Setup(EnemyController e)
     {
         meter = GameObject.Find("QuestionMarkMeter").GetComponent<Image>();
-        maxValue = 5f;
+        maxValue = e.MaxSusicionLevel;
     }
 
     public void Tick(EnemyController e)
@@ -24,7 +24,7 @@ public class ReactToPlayer : ISpyState
         if (e.CanSeePlayer != null)
         {
             float normDistance = Vector3.Distance(e.transform.position, e.CanSeePlayer.transform.position) / e.LookArea.GetComponent<Cone>().ConeHeight;
-            valueMultiplier = Mathf.Lerp(2f, 0.25f, normDistance);
+            valueMultiplier = Mathf.Lerp(e.HighestPoint, e.LowestPoint, normDistance);
         }
 
         if (e.CanSeePlayer != null)
@@ -45,14 +45,24 @@ public class ReactToPlayer : ISpyState
             e.SetChaseActive(true);
             e.SetReactActive(false);
 
-            //return new ChasePlayer();
+            if (e.WasMoving)
+                e.GoBackPosition = e.CurrentPoint.transform.position;
+            else
+                e.GoBackPosition = e.transform.position;
+
+            return new ChasePlayer();
         }
         else if (normValue >= 0.5f && e.CanSeePlayer == null)
         {
             e.SetLookActive(true);
             e.SetReactActive(false);
 
-            Debug.Log("Future stretch goal");
+            if (e.WasMoving)
+                e.GoBackPosition = e.CurrentPoint.transform.position;
+            else
+                e.GoBackPosition = e.transform.position;
+
+            return new LookAround();
         }
         else if (normValue <= 0f && e.CanSeePlayer == null)
         {

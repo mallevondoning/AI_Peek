@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        _locomotion.Setup(transform, _artTransform, _rotSpeed, _speed, _rigidbody);
+        _locomotion.Setup(_artTransform, _rotSpeed, _speed, _rigidbody);
     }
 
     private void FixedUpdate()

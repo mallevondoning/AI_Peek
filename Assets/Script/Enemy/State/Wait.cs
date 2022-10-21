@@ -20,11 +20,13 @@ public class Wait : ISpyState
             if (e.RaycastDirectionList[i].Count > 0)
                 rotationIndexList.Add(i);
         }
+
+        e.WasMoving = false;
     }
 
     public void Tick(EnemyController e)
     {
-        timeWaited += e.TickTimer;
+        timeWaited += Time.deltaTime;
     }
 
     public ISpyState Transition(EnemyController e)
@@ -52,6 +54,7 @@ public class Wait : ISpyState
             switch (isMovingRNG)
             {
                 case 0:
+                    e.GoBackPosition = e.transform.position;
                     e.HasMoved = true;
                     return new MoveToPoint();
                 case 1:

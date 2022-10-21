@@ -316,9 +316,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2106888994392031307}
+  - component: {fileID: 1154604509}
   - component: {fileID: 2106888994392031310}
   - component: {fileID: 1154604510}
-  - component: {fileID: 1154604509}
   m_Layer: 7
   m_Name: Enemy
   m_TagString: Untagged
@@ -346,6 +346,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1154604509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106888994392031311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af3cff8099407be42b4a8480b0b872cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MoveSpeed: 3
+  RotSpeed: 180
+  MaxSusicionLevel: 10
+  _reactState: {fileID: 4433460650656100096}
+  _chaseState: {fileID: 4360009913264780361}
+  _lookState: {fileID: 7860694504989875707}
+  db_testStates: 0
 --- !u!136 &2106888994392031310
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -376,22 +395,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 122
   m_CollisionDetection: 0
---- !u!114 &1154604509
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106888994392031311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af3cff8099407be42b4a8480b0b872cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _reactState: {fileID: 4433460650656100096}
-  _chaseState: {fileID: 4360009913264780361}
-  _lookState: {fileID: 7860694504989875707}
-  db_testStates: 0
 --- !u!1 &2106888994764534432
 GameObject:
   m_ObjectHideFlags: 0
@@ -974,7 +977,7 @@ MonoBehaviour:
   _material: {fileID: 0}
   _coneSides: 10
   _proportionalRadius: 0
-  _coneRadius: 2.5
+  _coneRadius: 3.5
   _coneHeight: 9
 --- !u!1 &4360009913264780361
 GameObject:

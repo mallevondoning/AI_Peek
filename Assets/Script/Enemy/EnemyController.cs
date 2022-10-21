@@ -5,22 +5,26 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     public List<List<GameObject>> RaycastDirectionList = new List<List<GameObject>>();
-
-    public int StuckCounter { get; set; }
-    public float TickTimer { get; private set; }
-    public float MoveSpeed { get; private set; }
-    public float RotSpeed { get; private set; }
-    public bool HasMoved { get; set; }
-    public bool WasMoving { get; set; }
-
     public List<GameObject> RaycastListNorth { get; private set; }
     public List<GameObject> RaycastListEast { get; private set; }
     public List<GameObject> RaycastListSouth { get; private set; }
     public List<GameObject> RaycastListWest { get; private set; }
 
+    public int StuckCounter { get; set; }
+    public float TickTimer { get; private set; }
+    public bool HasMoved { get; set; }
+    public bool WasMoving { get; set; }
+
+    public Vector3 GoBackPosition { get; set; }
     public PointAccses CurrentPoint { get; set; }
     public PlayerController CanSeePlayer { get; private set; }
     public MeshCollider LookArea { get; private set; }
+
+    public float MoveSpeed = 4f;
+    public float RotSpeed = 180f;
+    public float MaxSusicionLevel = 10f;
+    public float HighestPoint = 2f;
+    public float LowestPoint = 0.5f;
 
     [SerializeField]
     private GameObject _reactState;
@@ -31,9 +35,6 @@ public class EnemyController : MonoBehaviour
 
     private ISpyState _enemyState;
 
-    [SerializeField]
-    private TestStates db_testStates;
-
     private void Awake()
     {
         Init();
@@ -41,33 +42,7 @@ public class EnemyController : MonoBehaviour
 
     void Init()
     {
-        switch (db_testStates)
-        {
-            case TestStates.wait:
-                _enemyState = new Wait();
-                break;
-            case TestStates.north:
-                _enemyState = new TurnNorth();
-                break;
-            case TestStates.south:
-                _enemyState = new TurnSouth();
-                break;
-            case TestStates.east:
-                _enemyState = new TurnEast();
-                break;
-            case TestStates.west:
-                _enemyState = new TurnWest();
-                break;
-            case TestStates.moveToPoint:
-                _enemyState = new MoveToPoint();
-                break;
-            case TestStates.reactOnPlayer:
-                _enemyState = new ReactToPlayer();
-                break;
-            default:
-                _enemyState = null;
-                break;
-        }
+        _enemyState = new Wait();
 
         RaycastDirectionList = new List<List<GameObject>>();
 
@@ -95,13 +70,12 @@ public class EnemyController : MonoBehaviour
             _enemyState.Setup(this);
         }
 
+        GoBackPosition = Vector3.zero;
         CurrentPoint = null;
 
         HasMoved = true;
         WasMoving = false;
 
-        MoveSpeed = 10f;
-        RotSpeed = 180f;
         TickTimer = Time.deltaTime;
     }
 
@@ -242,16 +216,4 @@ public class EnemyController : MonoBehaviour
         if (playerCheck != null)
             CanSeePlayer = null;
     }
-}
-
-enum TestStates
-{
-    NoneID = int.MaxValue,
-    wait = 0,
-    north = 1,
-    south = 2,
-    east = 3,
-    west = 4,
-    moveToPoint = 5,
-    reactOnPlayer = 6,
 }

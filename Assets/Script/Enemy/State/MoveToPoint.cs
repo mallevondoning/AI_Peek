@@ -9,66 +9,85 @@ public class MoveToPoint : ISpyState
     int goToPoint = 0;
     float maxDistance = 0f;
     bool isStuck = false;
+    bool wasMoving = false;
+
+
+    Vector3 pointPos = Vector3.zero;
 
     public void Setup(EnemyController e) 
     {
-        int loop = 0; // fail safe variable
-        int randomPoint = 0; //<-- temp varibale for RNG regarding point
+        wasMoving = e.WasMoving;
 
-        //finds all point in the EnemyController scripts
-        for (int i = 0; i < e.RaycastDirectionList.Count; i++)
+        if (!e.WasMoving)
         {
-            for (int u = 0; u < e.RaycastDirectionList[i].Count; u++)
-            {
-                var currentTemp = e.RaycastDirectionList[i][u].GetComponent<PointAccses>();
+            int loop = 0; // fail safe variable
+            int randomPoint = 0; //<-- temp varibale for RNG regarding point
 
-                if (currentTemp != null)
-                    pointList.Add(currentTemp);
-            }
-        }
-
-        //fail safe if the spy get stuck 
-        if (e.StuckCounter<10)
-        {
-            if (pointList.Count > 0)
+            //finds all point in the EnemyController scripts
+            for (int i = 0; i < e.RaycastDirectionList.Count; i++)
             {
-                do
+                for (int u = 0; u < e.RaycastDirectionList[i].Count; u++)
                 {
-                    randomPoint = Random.Range(0, pointList.Count);
+                    var currentTemp = e.RaycastDirectionList[i][u].GetComponent<PointAccses>();
 
-                    loop++;
-                    if (loop >25)
+                    if (currentTemp != null)
+                        pointList.Add(currentTemp);
+                }
+            }
+
+            //fail safe if the spy get stuck 
+            if (e.StuckCounter<10)
+            {
+                if (pointList.Count > 0)
+                {
+                    do
                     {
-                        Debug.LogError(e.name+" has no free points");
-                        isStuck = true;
-                        return;
-                    }
-                } while (pointList[randomPoint].IsOccupied);
-                goToPoint = randomPoint; //<-- sets witch point is in focus
+                        randomPoint = Random.Range(0, pointList.Count);
+
+                        loop++;
+                        if (loop > 1000)
+                        {
+                            Debug.LogError(e.name+" has no free points");
+                            isStuck = true;
+                            return;
+                        }
+                    } while (pointList[randomPoint].IsOccupied);
+                    goToPoint = randomPoint; //<-- sets witch point is in focus
+                }
+                else
+                {
+                    isStuck = true;
+                    return;
+                }
             }
             else
             {
+                Debug.LogError(e.name+" is in a corner with no free points or no point at all");
                 isStuck = true;
                 return;
             }
+
+            if (e.CurrentPoint != null)
+                e.CurrentPoint.IsNotOccupied();
+
+            //sets the max distance to use in a lerp later
+            pointPos = pointList[goToPoint].transform.position;
         }
         else
         {
-            Debug.LogError(e.name+" is in a corner with no free points or no point at all");
-            isStuck = true;
-            return;
+            pointPos = e.CurrentPoint.transform.position;
         }
 
-        if (e.CurrentPoint != null)
-            e.CurrentPoint.IsNotOccupied();
-
-        //sets the max distance to use in a lerp later
-        Vector3 pointPos = pointList[goToPoint].transform.position;
         pointPos.y = e.transform.position.y; //<-- sets so the y axis does not matter
         maxDistance = Vector3.Distance(e.transform.position, pointPos);
 
         //sets do this point is occupied
-        pointList[goToPoint].IsOccupiedFunc();
+        if (!wasMoving)
+            pointList[goToPoint].IsOccupiedFunc();
+        else
+            e.CurrentPoint.IsOccupiedFunc();
+
+        e.WasMoving = false;
     }
 
     public void Tick(EnemyController e)
@@ -77,25 +96,15 @@ public class MoveToPoint : ISpyState
         {
             //movment
 
-            //sets position where the point is
-            Vector3 pointPos = pointList[goToPoint].transform.position;
-            pointPos.y = e.transform.position.y; //<-- sets so the y axis does not matter
-
             //sets the normalized value lerp
             float normDistance = Vector3.Distance(e.transform.position, pointPos) / maxDistance;
 
-            //lerps a speed regarding the distance to the point
-            float moveSpeed = 0f;
-            if (normDistance > 0.5f)
-                moveSpeed = Mathf.Lerp(e.MoveSpeed * 2, e.MoveSpeed * 0.25f, normDistance);
-            else
-                moveSpeed = Mathf.Lerp(e.MoveSpeed * 0.25f, e.MoveSpeed * 2, normDistance);
-
             //moving function 
-            Vector3 moveToPoint = Vector3.MoveTowards(e.transform.position, pointPos, moveSpeed * Time.deltaTime);
+            Vector3 moveToPoint = Vector3.MoveTowards(e.transform.position, pointPos, e.MoveSpeed * Time.deltaTime);
 
             //sets the position
             e.transform.position = moveToPoint;
+
 
             //rotation
             float normAngle = Vector3.Angle(e.transform.forward, pointPos) / 180f;
@@ -107,7 +116,6 @@ public class MoveToPoint : ISpyState
                 targetRotation = Quaternion.LookRotation(targetDirection, Vector3.up);
             else
                 targetRotation = Quaternion.identity;
-
 
             Vector3 toRotateTowards = Quaternion.RotateTowards(e.transform.rotation, targetRotation, finalRotSpeed * Time.deltaTime).eulerAngles;
             toRotateTowards.x = 0f;
@@ -127,14 +135,23 @@ public class MoveToPoint : ISpyState
         else if (e.CanSeePlayer != null)
         {
             //add code it know it should back to this state
+            e.WasMoving = true;
+
+            if (!wasMoving)
+                e.CurrentPoint = pointList[goToPoint];
+
+            e.GoBackPosition = e.CurrentPoint.transform.position;
 
             e.SetReactActive(true);
             return new ReactToPlayer();
         }
-        else if (e.transform.position.x == pointList[goToPoint].transform.position.x && e.transform.position.z == pointList[goToPoint].transform.position.z)
+        else if ((wasMoving && e.transform.position.x == e.CurrentPoint.transform.position.x && e.transform.position.z == e.CurrentPoint.transform.position.z) ||
+                (!wasMoving && e.transform.position.x == pointList[goToPoint].transform.position.x && e.transform.position.z == pointList[goToPoint].transform.position.z))
         {
             e.StuckCounter = 0;
-            e.CurrentPoint = pointList[goToPoint];
+            if (!wasMoving)
+                e.CurrentPoint = pointList[goToPoint];
+
             return new Wait();
         }
         return null;
