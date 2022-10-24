@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class FollowPlayer : MonoBehaviour
 {
+    [SerializeField]
+    Vector3 modifiedPos;
+
     private Transform _playerTransform;
 
     private void Awake()
@@ -13,6 +16,6 @@ public class FollowPlayer : MonoBehaviour
 
     void Update()
     {
-        transform.position = _playerTransform.position + new Vector3(0, 8, -4);
+        transform.position = _playerTransform.position + modifiedPos;
     }
 }

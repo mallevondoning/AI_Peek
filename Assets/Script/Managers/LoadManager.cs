@@ -5,17 +5,32 @@ using UnityEngine.SceneManagement;
 
 public class LoadManager : MonoBehaviour
 {
-    public IEnumerator LoadScene(string sceneName, bool WithHUD)
+    public static LoadManager Instance;
+
+    private void Awake()
     {
-        yield return SceneManager.LoadSceneAsync(sceneName);
+        Instance = this;
     }
 
-    public void LoadSceneWithHUD(string sceneName)
+    public IEnumerator LoadSceneCoroutine(string sceneName)
     {
-        StartCoroutine(LoadScene(sceneName,true));
+        yield return SceneManager.LoadSceneAsync(sceneName);
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
     }
-    public void LoadSceneWithoutHUD(string sceneName)
+    public IEnumerator LoadSceneCoroutineAddative(string sceneName)
     {
-        StartCoroutine(LoadScene(sceneName, false));
+        yield return SceneManager.LoadSceneAsync(sceneName,LoadSceneMode.Additive);
+    }
+
+    public void LoadSceneFunc(string sceneName)
+    {
+        StartCoroutine(LoadSceneCoroutine(sceneName));
+    }
+    public void LoadSceneFunc(string sceneName, bool isAdditive)
+    {
+        if (!isAdditive)
+            StartCoroutine(LoadSceneCoroutine(sceneName));
+        else
+            StartCoroutine(LoadSceneCoroutineAddative(sceneName));
     }
 }
