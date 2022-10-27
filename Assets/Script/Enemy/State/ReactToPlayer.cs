@@ -23,8 +23,8 @@ public class ReactToPlayer : ISpyState
     {
         if (e.CanSeePlayer != null)
         {
-            float normDistance = Vector3.Distance(e.transform.position, e.CanSeePlayer.transform.position) / e.LookArea.GetComponent<Cone>().ConeHeight;
-            valueMultiplier = Mathf.Lerp(e.HighestPoint, e.LowestPoint, normDistance);
+            float normDistance = Vector3.Distance(e.transform.position, e.CanSeePlayer.transform.position) / e.LookTrigger.height;
+            valueMultiplier = Mathf.LerpUnclamped(e.HighestPoint, e.LowestPoint, normDistance);
         }
 
         if (e.CanSeePlayer != null)

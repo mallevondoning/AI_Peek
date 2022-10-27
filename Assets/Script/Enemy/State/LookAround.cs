@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class LookAround : ISpyState
 {
     int stateState = 0;
+    int pongState = 0;
     float waitTimer = 0f;
     float maxTimer = 0f;
     Vector3 lastSeenplayer;
@@ -16,11 +17,8 @@ public class LookAround : ISpyState
     Quaternion targetRotation = Quaternion.identity;
     Vector3 toRotateTowards = Vector3.zero;
 
-    Quaternion neutralAngle = Quaternion.identity;
-    Vector3 turnLightRight = Vector3.zero;
-    Vector3 turnHardRight = Vector3.zero;
-    Vector3 turnLightLeft = Vector3.zero;
-    Vector3 turnHardLeft = Vector3.zero;
+    Vector3 neutralAngle = Vector3.zero;
+    Vector3 turnAngle = Vector3.zero;
 
     public void Setup(EnemyController e)
     {
@@ -47,13 +45,11 @@ public class LookAround : ISpyState
         }
 
         stateState = 0;
+        pongState = 0;
         waitTimer = 0f;
         maxTimer = 2f;
 
-        turnLightRight = neutralAngle.eulerAngles + new Vector3(0, 45f, 0);
-        turnHardRight = neutralAngle.eulerAngles + new Vector3(0, 90f, 0);
-        turnLightLeft = neutralAngle.eulerAngles + new Vector3(0, -45f, 0);
-        turnHardLeft = neutralAngle.eulerAngles + new Vector3(0, -90f, 0);
+        turnAngle = new Vector3(0, 45f, 0);
     }
 
     public void Tick(EnemyController e)
@@ -89,17 +85,26 @@ public class LookAround : ISpyState
 
                 if (e.transform.position == lastSeenplayer)
                 {
-                    neutralAngle = e.transform.rotation;
+                    neutralAngle = e.transform.rotation.eulerAngles;
                     stateState++;
                 }
                 break;
             case 2:
                 //<problem> does not turn corectly
-                //e.transform.rotation = Quaternion.RotateTowards(e.transform.rotation,Quaternion.Euler(turnLightRight), e.RotSpeed * Time.deltaTime);
-                Debug.Log("look around (fix later)");
-                //</problem>
+                if (pongState % 2 == 0)
+                    e.transform.rotation = Quaternion.RotateTowards(e.transform.rotation, Quaternion.Euler(neutralAngle + turnAngle), e.RotSpeed * Time.deltaTime);
+                else
+                    e.transform.rotation = Quaternion.RotateTowards(e.transform.rotation, Quaternion.Euler(neutralAngle - turnAngle), e.RotSpeed * Time.deltaTime);
 
-                stateState++;
+                if (e.transform.rotation.eulerAngles == neutralAngle + turnAngle || e.transform.rotation.eulerAngles == neutralAngle - turnAngle)
+                    pongState++;
+
+                if (pongState > 4)
+                    e.transform.rotation = Quaternion.RotateTowards(e.transform.rotation, Quaternion.Euler(neutralAngle), e.RotSpeed * Time.deltaTime);
+
+                if (e.transform.rotation.eulerAngles == neutralAngle && pongState > 4)
+                    stateState++;
+                //</problem>
                 break;
             case 3: //<-- wait for maxTimer time
                 waitTimer += Time.deltaTime;

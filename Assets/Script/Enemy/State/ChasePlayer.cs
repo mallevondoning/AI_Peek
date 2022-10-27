@@ -33,8 +33,7 @@ public class ChasePlayer : ISpyState
                     stateState++;
                 break;
             case 1:
-                Vector3 playerPos = new Vector3();
-                Rigidbody playerRB = new Rigidbody();
+                Vector3 playerPos;
 
                 //sets position where the point is
                 if (e.CanSeePlayer == null)
@@ -55,24 +54,15 @@ public class ChasePlayer : ISpyState
                     }
 
                     playerPos = player.transform.position;
-                    playerRB = player.GetComponent<Rigidbody>();
 
                     cantSeeTimer += Time.deltaTime;
                 }
                 else
                 {
                     playerPos = e.CanSeePlayer.transform.position;
-                    playerRB = e.CanSeePlayer.GetComponent<Rigidbody>();
 
                     cantSeeTimer -= Time.deltaTime;
                 }
-
-                Vector3 normDir = (e.transform.position - playerPos).normalized;
-                normDir *= e.MoveSpeed * speedMultiplier * Time.fixedDeltaTime;
-
-                Vector3 finalDir = new Vector3(normDir.x, playerRB.velocity.y, normDir.z);
-                playerRB.velocity = finalDir;
-
 
                 //moving function 
                 Vector3 moveToPoint = Vector3.MoveTowards(e.transform.position, playerPos, e.MoveSpeed * Time.deltaTime);

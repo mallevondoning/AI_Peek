@@ -8,12 +8,10 @@ public class Wait : ISpyState
 
     private int timeToWait = 5;
     private float timeWaited = 0f;
-    private bool hasMoved = true;
 
     public void Setup(EnemyController e)
     {
-        timeToWait = Random.Range(5, 11);
-        hasMoved = e.HasMoved;
+        timeToWait = Random.Range(3, 9);
 
         for (int i = 0; i < e.RaycastDirectionList.Count; i++)
         {
@@ -45,17 +43,10 @@ public class Wait : ISpyState
             int rotateTo = rotationIndexList[rotationIndexRNG];
             //</problem>//
 
-            if (hasMoved)
-            {
-                e.UpdateRaycast();
-                e.HasMoved = false;
-            }
-
             switch (isMovingRNG)
             {
                 case 0:
                     e.GoBackPosition = e.transform.position;
-                    e.HasMoved = true;
                     return new MoveToPoint();
                 case 1:
                     switch (rotateTo)

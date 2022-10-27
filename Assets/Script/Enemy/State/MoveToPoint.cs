@@ -92,8 +92,10 @@ public class MoveToPoint : ISpyState
 
     public void Tick(EnemyController e)
     {
+
         if (!isStuck)
         {
+
             //movment
 
             //sets the normalized value lerp
@@ -121,6 +123,8 @@ public class MoveToPoint : ISpyState
             toRotateTowards.x = 0f;
 
             e.transform.rotation = Quaternion.Euler(toRotateTowards);
+            
+            e.ConstantRaycastUpdate(targetDirection);
         }
     }
 
@@ -145,12 +149,18 @@ public class MoveToPoint : ISpyState
             e.SetReactActive(true);
             return new ReactToPlayer();
         }
-        else if ((wasMoving && e.transform.position.x == e.CurrentPoint.transform.position.x && e.transform.position.z == e.CurrentPoint.transform.position.z) ||
+        else if ((wasMoving && e.transform.position.x == e.CurrentPoint.transform.position.x && e.transform.position.z == e.CurrentPoint.transform.position.z) || 
                 (!wasMoving && e.transform.position.x == pointList[goToPoint].transform.position.x && e.transform.position.z == pointList[goToPoint].transform.position.z))
         {
             e.StuckCounter = 0;
             if (!wasMoving)
                 e.CurrentPoint = pointList[goToPoint];
+
+            int controlDir = Mathf.RoundToInt(e.transform.rotation.eulerAngles.y / 90f);
+            Vector3 controlRot = e.transform.rotation.eulerAngles;
+            e.transform.rotation = Quaternion.Euler(new Vector3(controlRot.x, controlDir * 90f, controlRot.z));
+
+            e.UpdateRaycast();
 
             return new Wait();
         }
