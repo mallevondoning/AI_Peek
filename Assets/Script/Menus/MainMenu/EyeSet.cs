@@ -27,11 +27,11 @@ public class EyeSet : MonoBehaviour
     private int actionState;
     float waitTimer;
 
-    Vector3 _openLidPos = Vector3.zero;
-    Vector3 _closedLidPos = Vector3.zero;
+    float _openLidY;
+    float _closedLidY;
+    float _rightEyesX;
+    float _leftEyesX;
     Vector3 _neutralEyesPos = Vector3.zero;
-    Vector3 _rightEyesPos = Vector3.zero;
-    Vector3 _leftEyesPos = Vector3.zero;
 
     private void Awake()
     {
@@ -41,10 +41,10 @@ public class EyeSet : MonoBehaviour
         actionState = 0;
         waitTimer = 0f;
 
-        _openLidPos = new Vector3(2f, 5f, -2f);
-        _closedLidPos = new Vector3(2f, 4.4f, -2f);
-        _rightEyesPos = new Vector3(0.35f, 0f, 0f);
-        _leftEyesPos = new Vector3(-0.25f, 0f, 0f);
+        _openLidY = 5f;
+        _closedLidY = 4.4f;
+        _rightEyesX = 0.25f;
+        _leftEyesX = -0.25f;
     }
 
     private void Update()
@@ -97,18 +97,18 @@ public class EyeSet : MonoBehaviour
         switch (actionState)
         {
             case 0:
-                _eyeLid.transform.localPosition = Vector3.MoveTowards(_eyeLid.transform.position, _closedLidPos, _lidSpeed * Time.deltaTime);
+                _eyeLid.transform.localPosition = Vector3.MoveTowards(_eyeLid.transform.position, new Vector3(_eyeLid.transform.position.x, _closedLidY, _eyeLid.transform.position.z), _lidSpeed * Time.deltaTime);
 
-                if (_eyeLid.transform.localPosition == _closedLidPos)
+                if (_eyeLid.transform.localPosition.y <= _closedLidY)
                     actionState++;
                 break;
             case 1:
                 actionState += WaitingTimer();
                 break;
             case 2:
-                _eyeLid.transform.localPosition = Vector3.MoveTowards(_eyeLid.transform.position, _openLidPos, _lidSpeed * Time.deltaTime);
+                _eyeLid.transform.localPosition = Vector3.MoveTowards(_eyeLid.transform.position, new Vector3(_eyeLid.transform.position.x, _openLidY, _eyeLid.transform.position.z), _lidSpeed * Time.deltaTime);
 
-                if (_eyeLid.transform.localPosition == _openLidPos)
+                if (_eyeLid.transform.localPosition.y >= _openLidY)
                     ResetState();
                 break;
         }
@@ -118,9 +118,9 @@ public class EyeSet : MonoBehaviour
         switch (actionState)
         {
             case 0:
-                _eyes.transform.localPosition = Vector3.MoveTowards(_eyes.transform.position, _rightEyesPos, _eyeSpeed * Time.deltaTime);
+                _eyes.transform.localPosition = Vector3.MoveTowards(_eyes.transform.position, new Vector3(_rightEyesX, _eyes.transform.localPosition.y, _eyes.transform.localPosition.z), _eyeSpeed * Time.deltaTime);
 
-                if (_eyes.transform.localPosition == _rightEyesPos)
+                if (_eyes.transform.localPosition.x == _rightEyesX)
                     actionState++;
                 break;
             case 1:
@@ -139,9 +139,9 @@ public class EyeSet : MonoBehaviour
         switch (actionState)
         {
             case 0:
-                _eyes.transform.localPosition = Vector3.MoveTowards(_eyes.transform.position, _leftEyesPos, _eyeSpeed * Time.deltaTime);
+                _eyes.transform.localPosition = Vector3.MoveTowards(_eyes.transform.position, new Vector3(_leftEyesX, _eyes.transform.localPosition.y, _eyes.transform.localPosition.z), _eyeSpeed * Time.deltaTime);
 
-                if (_eyes.transform.localPosition == _leftEyesPos)
+                if (_eyes.transform.localPosition.x == _leftEyesX)
                     actionState++;
                 break;
             case 1:

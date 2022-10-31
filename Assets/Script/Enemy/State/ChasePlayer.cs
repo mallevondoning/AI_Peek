@@ -10,15 +10,14 @@ public class ChasePlayer : ISpyState
     float maxWaitTimer = 0f;
     float cantSeeTimer = 0f;
     float maxCantSeeTimer = 0f;
-    float speedMultiplier = 0f;
     float rotSpeedMultiplier = 0f;
+    //float speedMultiplier = 0f; <-- add if the chase speed of the enemies speed is to slow or fast
 
     public void Setup(EnemyController e)
     {
         stateState = 0;
         maxWaitTimer = 1f;
         maxCantSeeTimer = 2f;
-        speedMultiplier = 30f;
         rotSpeedMultiplier = 0.5f;
     }
 
